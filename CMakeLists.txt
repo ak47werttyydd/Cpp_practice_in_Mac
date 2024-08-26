@@ -4,4 +4,5 @@ project(Cpp)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(Cpp main.cpp
-        TrieTree.h)
+        TrieTree.h
+        StringComp_KMP.h)

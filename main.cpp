@@ -1,5 +1,6 @@
 #include <iostream>
 #include "TrieTree.h"
+#include "StringComp_KMP.h"
 
 void test_TrieTree()
 {
@@ -19,11 +20,16 @@ void test_TrieTree()
     // tr.print_levelwise_from_curNode(tr.get_root());
 }
 
+void test_StringComp_KMP()
+{
+    StringComp_KMP kmp("abxabcabxabx","abx");
+}
+
 
 
 int main()
 {
     std::cout << "Hello, World!" << std::endl;
-    test_TrieTree();
+    test_StringComp_KMP();
     return 0;
 }
