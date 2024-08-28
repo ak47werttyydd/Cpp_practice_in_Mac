@@ -41,7 +41,7 @@ public:
                 cur_node->subNode[char_index]=newNode;
             }
             TrieNode* parent_node=cur_node;
-            parent_node->isEnd=false;
+            // parent_node->isEnd=false;
             cur_node=cur_node->subNode[char_index]; //move to next node
             cur_node->parentNode=parent_node;
         }

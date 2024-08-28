@@ -5,4 +5,5 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(Cpp main.cpp
         TrieTree.h
-        StringComp_KMP.h)
+        StringComp_KMP.h
+        AC_AutoMachine.h)
