@@ -16,4 +16,5 @@ add_executable(Cpp main.cpp
         CanBeConnected.h
         FlipShift.h
         SlidingWindows.h
-        2DMatMul_1DMemory.h)
+        2DMatMul_1DMemory.h
+        AllPathsFromSourceToTarget.h)

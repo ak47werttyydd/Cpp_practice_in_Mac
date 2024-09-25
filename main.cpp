@@ -10,6 +10,7 @@
 #include "MinimalNumberOfPackages.h"
 #include "FlipShift.h"
 #include "SlidingWindows.h"
+#include "AllPathsFromSourceToTarget.h"
 using namespace std;
 
 void test_TrieTree()
@@ -140,14 +141,114 @@ void test_SlidingWindows()
         delete[] output_arr;
     }
 }
+void test_AllPathsFromSourceToTarget_memo(){
+    //initialize the graph in adjacent matrix
+    //edges[0][1]=1 means node0->node1,  edges[0][2]=0 means node0 can't directly connect to node2
+
+    /*First case: all paths are open*/
+    int edges[N][N];
+    //set all 0
+    for(int i=0;i<N;i++) //row
+    {
+        for(int j=0;j<N;j++) //column
+        {
+            edges[i][j]=0;
+        }
+    }
+    //set the first path node0->node1->...->nodeN-1
+    for(int i=0;i<N-1;i++)
+    {
+        edges[i][i+1]=1;
+    }
+    //set other two paths
+    edges[0][2]=1;
+    edges[3][7]=1;
+    bool result=AllPathsFromSourceToTarget(edges);
+    cout<<"result is "<<result<<endl;
+
+    //-----------------------------------------------------------------------------------
+    /*Second case: a deadend node0->node1->node2; an open path node0->node1->node3->...nodeN-1 */
+
+    //set all 0
+    for(int i=0;i<N;i++) //row
+    {
+        for(int j=0;j<N;j++) //column
+        {
+            edges[i][j]=0;
+        }
+    }
+    //set the first path node0->node1->node2
+    edges[0][1]=1;
+    edges[1][2]=1;
+    //set the second path node0->node1->node3->...->nodeN-1
+    edges[1][3]=1;
+    for(int i=1;i<N-1;i++)
+    {
+        if(i!=1 && i!=2)
+        {
+            edges[i][i+1]=1;
+        }
+    }
+    result=AllPathsFromSourceToTarget(edges);
+    cout<<"result is "<<result<<endl;
+}
+void test_AllPathsFromSourceToTarget_noMemo(){
+    //initialize the graph in adjacent matrix
+    //edges[0][1]=1 means node0->node1,  edges[0][2]=0 means node0 can't directly connect to node2
+
+    /*First case: all paths are open*/
+    int edges[N][N];
+    //set all 0
+    for(int i=0;i<N;i++) //row
+    {
+        for(int j=0;j<N;j++) //column
+        {
+            edges[i][j]=0;
+        }
+    }
+    //set the first path node0->node1->...->nodeN-1
+    for(int i=0;i<N-1;i++)
+    {
+        edges[i][i+1]=1;
+    }
+    //set other two paths
+    edges[0][2]=1;
+    edges[3][7]=1;
+    bool result=AllPathsFromSourceToTarget_noMemo(edges);
+    cout<<"result is "<<result<<endl;
+
+    //-----------------------------------------------------------------------------------
+    /*Second case: a deadend node0->node1->node2; an open path node0->node1->node3->...nodeN-1 */
+
+    //set all 0
+    for(int i=0;i<N;i++) //row
+    {
+        for(int j=0;j<N;j++) //column
+        {
+            edges[i][j]=0;
+        }
+    }
+    //set the first path node0->node1->node2
+    edges[0][1]=1;
+    edges[1][2]=1;
+    //set the second path node0->node1->node3->...->nodeN-1
+    edges[1][3]=1;
+    for(int i=1;i<N-1;i++)
+    {
+        if(i!=1 && i!=2)
+        {
+            edges[i][i+1]=1;
+        }
+    }
+    result=AllPathsFromSourceToTarget_noMemo(edges);
+    cout<<"result is "<<result<<endl;
+}
 
 int main()
 {
     std::cout << "Hello, World!" << std::endl;
-    // test_2D_ClosestPair();
-    // test_MinimalNumberOfPackages();
-    // test_FlipShift();
-    test_SlidingWindows();
+    test_AllPathsFromSourceToTarget_memo();
+    test_AllPathsFromSourceToTarget_noMemo();
     return 0;
 
 
