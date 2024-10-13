@@ -17,4 +17,5 @@ add_executable(Cpp main.cpp
         FlipShift.h
         SlidingWindows.h
         2DMatMul_1DMemory.h
-        AllPathsFromSourceToTarget.h)
+        AllPathsFromSourceToTarget.h
+        UnionFind_SimilarSentence.h)

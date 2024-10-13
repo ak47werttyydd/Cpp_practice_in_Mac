@@ -11,6 +11,7 @@
 #include "FlipShift.h"
 #include "SlidingWindows.h"
 #include "AllPathsFromSourceToTarget.h"
+#include "UnionFind_SimilarSentence.h"
 using namespace std;
 
 void test_TrieTree()
@@ -141,7 +142,7 @@ void test_SlidingWindows()
         delete[] output_arr;
     }
 }
-void test_AllPathsFromSourceToTarget_memo(){
+void test_AllPathsFromSourceToTarget_dag_memo(){
     //initialize the graph in adjacent matrix
     //edges[0][1]=1 means node0->node1,  edges[0][2]=0 means node0 can't directly connect to node2
 
@@ -163,7 +164,7 @@ void test_AllPathsFromSourceToTarget_memo(){
     //set other two paths
     edges[0][2]=1;
     edges[3][7]=1;
-    bool result=AllPathsFromSourceToTarget(edges);
+    bool result=AllPathsFromSourceToTarget_dag_memo(edges);
     cout<<"result is "<<result<<endl;
 
     //-----------------------------------------------------------------------------------
@@ -189,10 +190,10 @@ void test_AllPathsFromSourceToTarget_memo(){
             edges[i][i+1]=1;
         }
     }
-    result=AllPathsFromSourceToTarget(edges);
+    result=AllPathsFromSourceToTarget_dag_memo(edges);
     cout<<"result is "<<result<<endl;
 }
-void test_AllPathsFromSourceToTarget_noMemo(){
+void test_AllPathsFromSourceToTarget_dag_noMemo(){
     //initialize the graph in adjacent matrix
     //edges[0][1]=1 means node0->node1,  edges[0][2]=0 means node0 can't directly connect to node2
 
@@ -214,7 +215,7 @@ void test_AllPathsFromSourceToTarget_noMemo(){
     //set other two paths
     edges[0][2]=1;
     edges[3][7]=1;
-    bool result=AllPathsFromSourceToTarget_noMemo(edges);
+    bool result=AllPathsFromSourceToTarget_dag_noMemo(edges);
     cout<<"result is "<<result<<endl;
 
     //-----------------------------------------------------------------------------------
@@ -240,17 +241,168 @@ void test_AllPathsFromSourceToTarget_noMemo(){
             edges[i][i+1]=1;
         }
     }
-    result=AllPathsFromSourceToTarget_noMemo(edges);
+    result=AllPathsFromSourceToTarget_dag_noMemo(edges);
     cout<<"result is "<<result<<endl;
+}
+void test_AllPathsFromSrc2Dest_cyclic_memo()
+{
+    //initialize the graph in adjacent matrix
+    //edges[0][1]=1 means node0->node1,  edges[0][2]=0 means node0 can't directly connect to node2
+
+    /*First case: all paths are open*/
+    int edges[N2][N2];
+    //set all 0
+    for(int i=0;i<N2;i++) //row
+    {
+        for(int j=0;j<N2;j++) //column
+        {
+            edges[i][j]=0;
+        }
+    }
+    //set the first path node0->node1->2->3
+    for(int i=0;i<3;i++)
+    {
+        edges[i][i+1]=1;
+    }
+    //set a cycle node2->node1
+    edges[2][1]=1;
+    //set a deadend
+    edges[1][4]=1;
+    //set the second path node0->node5->node3
+    edges[0][5]=1;
+    edges[5][3]=1;
+
+    bool result=AllPathsFromSourceToTarget_cyclic_memo(edges);
+    cout<<"result of case 1 is "<<result<<endl;
+
+    // -------------------------------------------------------
+    //set all 0
+    for(int i=0;i<N2;i++) //row
+    {
+        for(int j=0;j<N2;j++) //column
+        {
+            edges[i][j]=0;
+        }
+    }
+    //set the first path node0->node1->2->3
+    for(int i=0;i<3;i++)
+    {
+        edges[i][i+1]=1;
+    }
+    //set a cycle node2->node1
+    edges[2][1]=1;
+    result=AllPathsFromSourceToTarget_cyclic_memo(edges);
+    cout<<"result of case 2 is "<<result<<endl;
+
+}
+void test_FindAllPathsFromSrc2Dest_cyclic_memo()
+{
+    //initialize the graph in adjacent matrix
+    //edges[0][1]=1 means node0->node1,  edges[0][2]=0 means node0 can't directly connect to node2
+
+    /*First case: all paths are open*/
+    int edges[N2][N2];
+    //set all 0
+    for(int i=0;i<N2;i++) //row
+    {
+        for(int j=0;j<N2;j++) //column
+        {
+            edges[i][j]=0;
+        }
+    }
+    //set the first path node0->node1->2->3
+    for(int i=0;i<3;i++)
+    {
+        edges[i][i+1]=1;
+    }
+    //set a cycle node2->node1
+    edges[2][1]=1;
+    //set a deadend
+    edges[1][4]=1;
+    //set the second path node0->node5->node3
+    edges[0][5]=1;
+    edges[5][3]=1;
+
+    FindAllPathsFromSrc2Dest_cyclic_memo(edges);
+
+}
+void test_FindAllPathsFromSrc2Dest_cyclic_memo_popInLoop()
+{
+    //initialize the graph in adjacent matrix
+    //edges[0][1]=1 means node0->node1,  edges[0][2]=0 means node0 can't directly connect to node2
+
+    /*First case: all paths are open*/
+    int edges[N2][N2];
+    //set all 0
+    for(int i=0;i<N2;i++) //row
+    {
+        for(int j=0;j<N2;j++) //column
+        {
+            edges[i][j]=0;
+        }
+    }
+    //set the first path node0->node1->2->3
+    for(int i=0;i<3;i++)
+    {
+        edges[i][i+1]=1;
+    }
+    //set a cycle node2->node1
+    edges[2][1]=1;
+    //set a deadend
+    edges[1][4]=1;
+    //set the second path node0->node5->node3
+    edges[0][5]=1;
+    edges[5][3]=1;
+
+    FindAllPathsFromSrc2Dest_cyclic_memo_popInLoop(edges);
+
+}
+void test_UnionFind_SimilarSentence()
+{
+    //test1: similar strings
+    string str1="I am a good student";
+    string str2="I am a fine student";
+    string str3="I am an excellent student";
+    string str7="They are the best students";
+
+    //test2: not similar strings
+    string str4="He is a good teacher";
+    string str5="He is not a fine teacher"; //1 word more
+    // string str6="He is an excellent teacher";
+
+    vector<vector<string>> similarPairs={
+        //a set, in a vector
+        {"I","He","They"},
+        //a set, in two vectors, same first element
+        {"am","is"},
+        {"am","are"},
+        //a set, in two vectors, different first element
+        {"a","an"},
+        {"an","the"},
+        //a set, in a vector
+        {"good","fine","excellent","best"},
+        //a set, in two vectors, same first element
+        {"student","students"},
+    };
+
+    SimilarSentence ss(similarPairs);
+    //test1: all result should be true
+    cout<<"str1 and str2 are similar: "<<ss(str1,str2)<<endl;
+    cout<<"str2 and str3 are similar: "<<ss(str2,str3)<<endl;
+    cout<<"str3 and str7 are similar: "<<ss(str3,str7)<<endl;
+    cout<<"str1 and str7 are similar: "<<ss(str1,str7)<<endl;
+
+    //test2: all result should be false
+    cout<<"str1 and str4 are similar: "<<ss(str1,str4)<<endl;
+    cout<<"str4 and str5 are similar: "<<ss(str4,str5)<<endl;
 }
 
 int main()
 {
     std::cout << "Hello, World!" << std::endl;
-    test_AllPathsFromSourceToTarget_memo();
-    test_AllPathsFromSourceToTarget_noMemo();
+    // test_AllPathsFromSrc2Dest_cyclic_memo();
+    // test_FindAllPathsFromSrc2Dest_cyclic_memo();
+    //test UnionFind_SimilarSentence
+    test_UnionFind_SimilarSentence();
     return 0;
-
-
-
 }
