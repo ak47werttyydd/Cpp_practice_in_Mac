@@ -12,6 +12,8 @@
 #include "SlidingWindows.h"
 #include "AllPathsFromSourceToTarget.h"
 #include "UnionFind_SimilarSentence.h"
+#include "OperatorOrder.h"
+#include "OperatorOrder_GPT_PostOrder.h"
 using namespace std;
 
 void test_TrieTree()
@@ -60,7 +62,8 @@ void test_HaffmanCode()
 }
 void test_MeetingRoom()
 {
-    MeetingRoom mr({{1,2},{2,5},{6,8},{8,11},{3,9},{9,12},{4,7},{9,13}});
+    MeetingRoom mr({{1,2},{2,5},{6,8},{8,11},{3,9},{9,12},{4,7},{9,13}}, "byArr");
+    MeetingRoom mr2({{1,2},{2,5},{6,8},{8,11},{3,9},{9,12},{4,7},{9,13}}, "byMinHeap");
 }
 void test_heap()
 {
@@ -382,7 +385,7 @@ void test_UnionFind_SimilarSentence()
         //a set, in a vector
         {"good","fine","excellent","best"},
         //a set, in two vectors, same first element
-        {"student","students"},
+        {"student","students"}
     };
 
     SimilarSentence ss(similarPairs);
@@ -396,6 +399,14 @@ void test_UnionFind_SimilarSentence()
     cout<<"str1 and str4 are similar: "<<ss(str1,str4)<<endl;
     cout<<"str4 and str5 are similar: "<<ss(str4,str5)<<endl;
 }
+void test_OperatorOrder()
+{
+    OperatorOrder::OperatorOrder oo;
+}
+void test_OperatorOrder_GPT()
+{
+    OperatorOrder_GPT::OperatorOrder oo;
+}
 
 int main()
 {
@@ -403,6 +414,8 @@ int main()
     // test_AllPathsFromSrc2Dest_cyclic_memo();
     // test_FindAllPathsFromSrc2Dest_cyclic_memo();
     //test UnionFind_SimilarSentence
-    test_UnionFind_SimilarSentence();
+    // test_UnionFind_SimilarSentence();
+    // test_OperatorOrder_GPT();
+    test_MeetingRoom();
     return 0;
 }

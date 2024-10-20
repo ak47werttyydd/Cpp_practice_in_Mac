@@ -10,13 +10,14 @@ class MeetingRoom
 public:
     std::vector<std::vector<int>> intervals;
     std::vector<int> endTime; //store the end time of each meeting room
-    MeetingRoom(const std::vector<std::vector<int>>& intervals_in):intervals(intervals_in)
+    MeetingRoom(const std::vector<std::vector<int>>& intervals_in, std::string mode):intervals(intervals_in)
     {
         //sort the intervals by start time
         __sort();
         //schedule time slot for each meeting room
-        __schedule_byArr();
-        // __schedule_byMinHeap_vectorBased();
+        if(mode=="byArr") __schedule_byArr();
+        else if(mode=="byMinHeap") __schedule_byMinHeap_vectorBased();
+        else std::cout<<"invalid mode"<<std::endl;
         std::cout<<"meeting rooms number is: "<<endTime.size()<<std::endl;
     }
     //sort the intervals by start time
@@ -45,20 +46,23 @@ public:
             if(endTime.empty()) //no meeting room
             {
                 endTime.push_back(interval[1]);
-                continue;
+                continue; //proceed with another interval
             }
+            //has meeting rooms
             int i=0;
+            //find (in order of creation time) a meeting room available for the interval
             for(;i<endTime.size();i++)
             {
                 if(interval[0]>=endTime[i])
                 {
-                    endTime[i]=interval[1];
+                    endTime[i]=interval[1]; //find available meeting room
                     break;
                 }
             }
+            //no available meeting room, create a new one
             if(i==endTime.size())//no available meeting room
             {
-                endTime.push_back(interval[1]);
+                endTime.push_back(interval[1]); //create a new meeting room
             }
         }
         auto end = std::chrono::high_resolution_clock::now();
@@ -94,6 +98,7 @@ public:
     //     std::cout<<"----------scheduling is done----------"<<std::endl;
     // }
     //schedule time for meeting room by vector-based min heap
+    //endTime is a minheap here
     void __schedule_byMinHeap_vectorBased(){
         std::cout<<"----------starting scheduling----------"<<std::endl;
         auto start = std::chrono::high_resolution_clock::now();

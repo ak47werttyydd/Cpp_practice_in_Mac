@@ -18,4 +18,6 @@ add_executable(Cpp main.cpp
         SlidingWindows.h
         2DMatMul_1DMemory.h
         AllPathsFromSourceToTarget.h
-        UnionFind_SimilarSentence.h)
+        UnionFind_SimilarSentence.h
+        OperatorOrder.h
+        OperatorOrder_GPT_PostOrder.h)
