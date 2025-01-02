@@ -14,6 +14,9 @@
 #include "UnionFind_SimilarSentence.h"
 #include "OperatorOrder.h"
 #include "OperatorOrder_GPT_PostOrder.h"
+#include "CopyTwoTrees.h"
+#include "Uomap_Equality_Hashfun.h"
+#include "AsynPubSub.h"
 using namespace std;
 
 void test_TrieTree()
@@ -407,6 +410,104 @@ void test_OperatorOrder_GPT()
 {
     OperatorOrder_GPT::OperatorOrder oo;
 }
+void test_CopyTwoTrees()
+{
+    // Example usage
+    using namespace CopyTwoTrees;
+    CopyTwoTrees::Node* tree1 = new CopyTwoTrees::Node(1, new CopyTwoTrees::Node(2), new CopyTwoTrees::Node(3));
+    CopyTwoTrees::Node* tree2 = new CopyTwoTrees::Node(4, new CopyTwoTrees::Node(5), nullptr);
+
+    CopyTwoTrees::Node* result = BinaryTreeAdd::add2(tree1, tree2);
+
+    std::cout << "Root value of result: " << result->getValue() << std::endl;
+    std::cout << "Left child of result: " << (result->getLC() ? result->getLC()->getValue() : -1) << std::endl;
+    std::cout << "Right child of result: " << (result->getRC() ? result->getRC()->getValue() : -1) << std::endl;
+
+    // Free dynamically allocated memory here in practice
+}
+void test_Uomap_Equality_Hashfun()
+{
+    FunctionCache cache(modulo);
+
+    // Function modulo should be called.
+    std::cout << cache.calculate(5, 2) << std::endl;
+
+    // Function modulo should be called.
+    std::cout << cache.calculate(7, 4) << std::endl;
+
+    // Function modulo shouldn't be called because we have already made a call with arguments (5, 2)!
+    std::cout << cache.calculate(5, 2) << std::endl;
+}
+void test_AsynPusbSub()
+{
+    //initialize the message broker
+    MessageBroker messageBroker;
+    //initialize the publisher
+    Publisher publisher1(&messageBroker);
+    //initialize 2 subscribers, and they are automatically added to the messagebroker. And their corresponding outputChannels are created.
+    Subscriber subscriber2(&messageBroker,"subscriber2");
+    Subscriber subscriber3(&messageBroker,"subscriber3");
+    Subscriber subscriber4(&messageBroker,"subscriber4");
+    //publisher publishes a mmessage "msg_1" to the inputChannel of the messageBroker
+    publisher1.publish("msg_1","Please take actions");
+    //subscriber1 and subscriber2 subscribes to the topic "msg_1"
+    subscriber2.subscribeMsg("msg_1");
+    subscriber3.subscribeMsg("msg_1");
+    subscriber4.subscribeMsg("msg_2");
+    subscriber4.subscribeMsg("msg_3");
+
+    //messageBroker sends the message to the outputChannels of subscriber1 and subscriber2
+    messageBroker.msgBroadcast();
+    //subscriber1 and subscriber2 asynchronously receives the message and take actions. So action2 and action3 are executed in parallel.
+    std::future<std::shared_ptr<Message>> result2= //future msg_2
+        std::async(
+                std::launch::async,
+                [&subscriber2]() //action is a member function, so bind is to the object by lambda function
+                {
+                    //subscriber2 receives the message
+                    if(subscriber2.get_Message_delete("msg_1"))
+                    {
+                        //execute action_2
+                        return subscriber2.action("action_2", 5, "msg_2", "action_2 completed");
+                    }
+                    return std::make_shared<Message>("msg_2_error","subscriber2 does not receive msg_1");
+                }
+        );
+    std::future<std::shared_ptr<Message>> result3= //future msg_3
+        std::async(
+                std::launch::async,
+                [&subscriber3]()
+                {
+                    //subscriber3 receives the message
+                    if(subscriber3.get_Message_delete("msg_1"))
+                    {
+                        //execute action_3
+                        return subscriber3.action("action_3", 10, "msg_3", "action_3 completed");
+                    }
+                    return std::make_shared<Message>("msg_3_error","subscriber3 does not receive msg_1");
+                } //action is a member function, so bind is to the object by lambda function
+        );
+
+    //asyn publish msg_2 and msg_3, so they are not blocked by each other
+    std::future<void> future2 = publisher1.async_publish(std::move(result2));
+    std::future<void> future3 = publisher1.async_publish(std::move(result3));
+
+    //wait msg_2 and msg_3 to be published
+    future2.wait();
+    future3.wait();
+
+    //messageBroker sends msg_2 and msg_3 to the outputChannels of subscriber4
+    messageBroker.msgBroadcast();
+
+    //subscriber4 receives msg_2 and msg_3 and then takes actions to produce msg_4
+    std::shared_ptr<Message> msg_4;
+    if(subscriber4.get_Message_delete("msg_2") && subscriber4.get_Message_delete("msg_3"))
+    {
+        //execute action_4
+        msg_4=subscriber4.action("action_4", 2, "msg_4", "action_4 completed");
+        std::cout<<msg_4->getMsg()<<std::endl;
+    }
+}
 
 int main()
 {
@@ -416,6 +517,9 @@ int main()
     //test UnionFind_SimilarSentence
     // test_UnionFind_SimilarSentence();
     // test_OperatorOrder_GPT();
-    test_MeetingRoom();
+    // test_MeetingRoom();
+    // test_CopyTwoTrees();
+    // test_Uomap_Equality_Hashfun();
+    test_AsynPusbSub();
     return 0;
 }
